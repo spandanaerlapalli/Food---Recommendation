@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BiteFood - Register</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ff7a18, #ffb347);
+        }
+
+        .register-container {
+            width: 380px;
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff6b00;
+            margin-bottom: 8px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #ff6b00;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #ff6b00;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .register-btn:hover {
+            background: #e85d00;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .login-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+
+        .login-text a {
+            color: #ff6b00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-container">
+
+        <div class="logo">🍴 BiteFood</div>
+
+        <h2 class="title">Create Account</h2>
+
+        <div class="input-group">
+            <label for="name">Name</label>
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+                autocomplete="name"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="email">Email</label>
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                autocomplete="new-password"
+            >
+        </div>
+
+        <button
+            type="button"
+            class="register-btn"
+            onclick="register()"
+        >
+            Register
+        </button>
+
+        <p id="message"></p>
+
+        <p class="login-text">
+            Already have an account?
+            <a href="login.html">Login</a>
+        </p>
+
+    </div>
+
+
+    <script>
+
+        async function register() {
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            const message = document.getElementById("message");
+
+
+            // Check empty fields
+            if (!name || !email || !password) {
+
+                message.style.color = "red";
+                message.innerText = "Please fill all fields.";
+
+                return;
+            }
+
+
+            // Check password length
+            if (password.length < 6) {
+
+                message.style.color = "red";
+                message.innerText =
+                    "Password must contain at least 6 characters.";
+
+                return;
+            }
+
+
+            message.style.color = "#555";
+            message.innerText = "Creating account...";
+
+
+            try {
+
+                const response = await fetch("/api/register", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        name: name,
+                        email: email,
+                        password: password
+
+                    })
+
+                });
+
+
+                const data = await response.json();
+
+
+                if (response.ok) {
+
+                    message.style.color = "green";
+
+                    message.innerText =
+                        "Registration successful!";
+
+
+                    // Go to login page
+                    setTimeout(function () {
+
+                        window.location.href = "login.html";
+
+                    }, 1200);
+
+
+                } else {
+
+                    message.style.color = "red";
+
+                    message.innerText =
+                        data.message || "Registration failed.";
+
+                }
+
+
+            } catch (error) {
+
+                console.error("Registration error:", error);
+
+                message.style.color = "red";
+
+                message.innerText =
+                    "Cannot connect to server.";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>

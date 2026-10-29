@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Poojitha",
+    "email": "Poojitha@gmail.com",
+    "password": "123456"
+  },
+  {
+    "name": "Nandini",
+    "email": "Nandini@gmail.com",
+    "password": "987654"
+  },
+  {
+    "id": "121dd9a9-1edc-4b3a-beea-d6fb276d37d6",
+    "name": "Charan",
+    "email": "charan@gmail.com",
+    "salt": "689f2bdf76bb9ae084eda059d07b9c78",
+    "passwordHash": "da5f8c573188b192029ba4c8ad129562309a923574d091a766b4c2dca71e584c5c72cb49814523890dc196296788ea5469725f68dc122714c119eaae33de06d1"
+  },
+  {
+    "id": "604c0ccf-7b78-4ca5-b63e-5dbbc1c131c0",
+    "name": "nandu",
+    "email": "nandu@gmail.com",
+    "salt": "8d0f57f3da9901e936047ae758668f18",
+    "passwordHash": "cceb3df38e4f2188ce9cab189a7f0a9a25a9429987b3bdbcbe0d4596dda95abcebe0fd7cdb4fa4baca7dc63b1253ecfcbb1e607f6a4b727f1578a396ba4abfc9"
+  }
+]

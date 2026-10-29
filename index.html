@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BITEFOOD - Recipe Recommendation</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fffaf3;
+            color: #333;
+        }
+
+        header {
+            background: #e85d04;
+            color: white;
+            padding: 22px 15px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 16px;
+        }
+
+        .search-section {
+            padding: 25px 15px;
+            text-align: center;
+        }
+
+        #searchInput {
+            width: min(90%, 550px);
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #searchInput:focus {
+            border-color: #e85d04;
+        }
+
+        .filter-section {
+            padding: 10px 15px 25px;
+            text-align: center;
+        }
+
+        .filter-section h2 {
+            margin-bottom: 15px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 7px;
+            padding: 11px 17px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .category-btn {
+            background: white;
+            color: #e85d04;
+            border: 1px solid #e85d04;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: #e85d04;
+            color: white;
+        }
+
+        #dietFilter {
+            padding: 11px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .reset-btn {
+            background: #333;
+            color: white;
+            margin-left: 8px;
+        }
+
+        .reset-btn:hover {
+            background: #555;
+        }
+
+        #recipeSection {
+            padding: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: #b94700;
+        }
+
+        #recipeCount {
+            text-align: center;
+            margin: 15px 0 25px;
+            color: #666;
+        }
+
+        /* IMPORTANT: Recipe cards are inserted into recipeContainer */
+        #recipeContainer {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(min(100%, 250px), 1fr)
+            );
+            gap: 22px;
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.10);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .recipe-image-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            background: #f3e6d4;
+            overflow: hidden;
+        }
+
+        .recipe-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 65px;
+            background: #f3e6d4;
+        }
+
+        .recipe-content {
+            padding: 17px;
+        }
+
+        .recipe-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .recipe-category,
+        .recipe-diet,
+        .preparation-time {
+            margin: 9px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .recipe-category {
+            color: #e85d04;
+        }
+
+        .recipe-diet {
+            color: #287a3d;
+            font-weight: bold;
+        }
+
+        .view-recipe-btn {
+            width: 100%;
+            margin-top: 12px;
+            background: #e85d04;
+            color: white;
+            font-weight: bold;
+        }
+
+        .view-recipe-btn:hover {
+            background: #c84d00;
+        }
+
+        .message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 35px 15px;
+            background: white;
+            border-radius: 10px;
+            line-height: 1.8;
+        }
+
+        .message button {
+            background: #e85d04;
+            color: white;
+            margin-top: 15px;
+        }
+
+        /* Recipe details popup */
+        .recipe-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .recipe-modal-content {
+            position: relative;
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px;
+            border-radius: 12px;
+            margin: auto;
+        }
+
+        .close-modal {
+            position: sticky;
+            top: 0;
+            float: right;
+            z-index: 2;
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            background: #e85d04;
+            color: white;
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .recipe-modal-image {
+            display: block;
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            background: #f3e6d4;
+        }
+
+        .recipe-modal-content h2 {
+            margin: 15px 0;
+            color: #b94700;
+        }
+
+        .recipe-modal-content h3 {
+            margin: 20px 0 10px;
+        }
+
+        .recipe-modal-content ul,
+        .recipe-modal-content ol {
+            padding-left: 25px;
+        }
+
+        .recipe-modal-content li {
+            margin-bottom: 9px;
+            line-height: 1.6;
+        }
+
+        footer {
+            margin-top: 40px;
+            background: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 28px;
+            }
+
+            #recipeSection {
+                padding: 15px;
+            }
+
+            .recipe-modal {
+                padding: 10px;
+            }
+
+            .recipe-modal-content {
+                padding: 18px;
+            }
+
+            .recipe-modal-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <h1>🍲 BITEFOOD</h1>
+        <p>Discover delicious Indian recipes</p>
+    </header>
+
+    <!-- SEARCH -->
+    <section class="search-section">
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search recipes by name or ingredient..."
+            aria-label="Search recipes"
+        >
+    </section>
+
+    <!-- CATEGORY FILTERS -->
+    <section class="filter-section">
+        <h2>Choose Your Favourite Food</h2>
+
+        <div class="filter-buttons">
+
+            <button
+                type="button"
+                class="category-btn active"
+                data-category="all"
+            >
+                All Recipes
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Tiffin"
+            >
+                Tiffin
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Sambar"
+            >
+                Sambar
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Rasam"
+            >
+                Rasam
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Snacks"
+            >
+                Snacks
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Curries"
+            >
+                Curries
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Dal"
+            >
+                Dal
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Pachadi"
+            >
+                Pachadi
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Sweets"
+            >
+                Sweets
+            </button>
+
+        </div>
+
+        <!-- VEG / NON-VEG FILTER -->
+        <label for="dietFilter"><strong>Food Type:</strong></label>
+
+        <select id="dietFilter">
+            <option value="all">All Food</option>
+            <option value="Veg">Veg</option>
+            <option value="Non-Veg">Non-Veg</option>
+        </select>
+
+        <button
+            type="button"
+            class="reset-btn"
+            onclick="resetFilters()"
+        >
+            Reset Filters
+        </button>
+    </section>
+
+    <!-- RECIPES -->
+    <section id="recipeSection">
+        <h2 class="section-title">Our Recipes</h2>
+
+        <div id="recipeCount">
+            Loading recipes...
+        </div>
+
+        <div id="recipeContainer">
+            <div class="message">
+                Loading delicious recipes...
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 BITEFOOD | Made with ❤️ for food lovers</p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script src="/script.js"></script>
+
+</body>
+</html>

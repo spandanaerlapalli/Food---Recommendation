@@ -1,0 +1,23 @@
+{
+  "name": "bitefood",
+  "version": "1.0.0",
+  "description": "BiteFood - Food Recipe Recommendation System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "food",
+    "recipe",
+    "recommendation",
+    "bitefood",
+    "andhra-recipes",
+    "indian-food"
+  ],
+  "author": "BiteFood",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.20.0",
+    "express": "^4.22.3"
+  }
+}
